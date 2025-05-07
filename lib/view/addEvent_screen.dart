@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:invit_app/widget/bottom_navigation.dart';
 
 class AddEventScreen extends StatefulWidget {
   const AddEventScreen({super.key});
@@ -11,6 +12,7 @@ class AddEventScreen extends StatefulWidget {
 
 class _AddEventScreenState extends State<AddEventScreen> {
   int selectedHeading = 2;
+  int selectedBottomIndex = 0;
   final TextEditingController titleController = TextEditingController();
 
   double getTitleFontSize() {
@@ -29,6 +31,16 @@ class _AddEventScreenState extends State<AddEventScreen> {
         return 36;
     }
   }
+
+  @override
+  void initState() {
+    super.initState();
+    titleController.addListener(() {
+      setState(() {}); // 상태 변경 시 build 다시 호출
+    });
+  }
+
+  bool get isButtonEnabled => titleController.text.trim().isNotEmpty;
 
   @override
   void dispose() {
@@ -256,23 +268,44 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     const SizedBox(height: 30),
                     SizedBox(
                       width: double.infinity,
+                      height: 64,
                       child: ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white12,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                          onPressed: isButtonEnabled ? () {} : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(
+                              isButtonEnabled
+                                  ? 0x23FFFFFF
+                                  : 0x1AFFFFFF, // #FFFFFF14 / #FFFFFF0A
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 0,
                           ),
-                        ),
-                        child: const Text("이벤트 생성하기",
-                            style: TextStyle(color: Colors.white)),
-                      ),
+                          child: Text(
+                            "이벤트 생성하기",
+                            style: TextStyle(
+                              color: Color(
+                                isButtonEnabled
+                                    ? 0xF5FFFFFF
+                                    : 0x4DFFFFFF, // #FFFFFFF5 / #FFFFFF4D
+                              ),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          )),
                     ),
                     const SizedBox(height: 40),
                   ],
                 ),
               ),
             ),
+          ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: BottomNavigationBarFixed(selectedIndex: 0),
           ),
         ],
       ),
