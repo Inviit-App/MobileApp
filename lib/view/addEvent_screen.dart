@@ -11,6 +11,7 @@ class AddEventScreen extends StatefulWidget {
 
 class _AddEventScreenState extends State<AddEventScreen> {
   int selectedHeading = 2;
+  final TextEditingController titleController = TextEditingController();
 
   double getTitleFontSize() {
     switch (selectedHeading) {
@@ -30,11 +31,16 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   @override
+  void dispose() {
+    titleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // 🔹 블러 배경 이미지
           Positioned.fill(
             child: ImageFiltered(
               imageFilter: ImageFilter.blur(sigmaX: 60, sigmaY: 60),
@@ -44,8 +50,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
               ),
             ),
           ),
-
-          // 🔹 콘텐츠
           Positioned.fill(
             child: SafeArea(
               child: SingleChildScrollView(
@@ -54,7 +58,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // 🔹 커스텀 AppBar
                     Row(
                       children: [
                         IconButton(
@@ -73,24 +76,27 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-
-                    // 🔤 이벤트 타이틀
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white30),
+                        border: Border.all(color: const Color(0x66FFFFFF)),
                         borderRadius: BorderRadius.circular(12),
                         color: Colors.black.withOpacity(0.4),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "이벤트 타이틀",
+                          TextField(
+                            controller: titleController,
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: getTitleFontSize(),
                               fontWeight: FontWeight.w500,
+                            ),
+                            decoration: const InputDecoration(
+                              hintText: "이벤트 타이틀",
+                              hintStyle: TextStyle(color: Colors.white38),
+                              border: InputBorder.none,
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -99,7 +105,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             children: List.generate(5, (index) {
                               int heading = index + 1;
                               bool isSelected = selectedHeading == heading;
-
                               return Padding(
                                 padding: const EdgeInsets.only(left: 8),
                                 child: GestureDetector(
@@ -140,44 +145,63 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // 🖼️ 대표 이미지
-                    Stack(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.asset("assets/images/event1.png"),
-                        ),
-                        Positioned(
-                          bottom: 12,
-                          right: 12,
-                          child: CircleAvatar(
-                            backgroundColor: Colors.black.withOpacity(0.5),
-                            child: const Icon(Icons.edit, color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-
-                    // 📝 소개글
-                    TextField(
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: "이벤트 소개를 작성해주세요.",
-                        hintStyle: const TextStyle(color: Colors.white38),
-                        filled: true,
-                        fillColor: Colors.black.withOpacity(0.4),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
-                        ),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: const Color(0x66FFFFFF)),
                       ),
-                      maxLines: 3,
+                      child: Stack(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child: Image.asset("assets/images/event1.png"),
+                          ),
+                          Positioned(
+                            bottom: 12,
+                            right: 12,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.black.withOpacity(0.5),
+                              child:
+                                  const Icon(Icons.edit, color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 24),
-
-                    // 📋 이벤트 정보
+                    const SizedBox(height: 12),
+                    ConstrainedBox(
+                      constraints:
+                          const BoxConstraints(minHeight: 61, maxHeight: 300),
+                      child: TextField(
+                        style: const TextStyle(color: Colors.white),
+                        decoration: InputDecoration(
+                          hintText: "이벤트 소개를 작성해주세요.",
+                          hintStyle: const TextStyle(color: Colors.white38),
+                          filled: true,
+                          fillColor: Colors.black.withOpacity(0.4),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: Color(0x66FFFFFF)),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: Color(0x66FFFFFF)),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide:
+                                const BorderSide(color: Color(0x66FFFFFF)),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 12),
+                        ),
+                        maxLines: null,
+                        keyboardType: TextInputType.multiline,
+                      ),
+                    ),
+                    // const SizedBox(height: 5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -186,33 +210,65 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                         TextButton.icon(
-                          onPressed: () {},
-                          icon: const Icon(Icons.playlist_add,
-                              color: Colors.white),
+                          onPressed: () {
+                            // 목록추가 동작
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor:
+                                const Color(0x0AFFFFFF), // #FFFFFF0A
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 0),
+                          ),
                           label: const Text(
                             "목록추가",
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(color: Colors.white, fontSize: 16),
                           ),
+                          icon: const Icon(Icons.playlist_add,
+                              color: Colors.white),
                         ),
                       ],
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 16),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white24),
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.black.withOpacity(0.4),
-                      ),
-                      child: Column(
-                        children: [
-                          _infoRow(Icons.add, "호스트"),
-                          _infoRow(Icons.calendar_today, "날짜"),
-                          _infoRow(Icons.location_on, "위치"),
-                          _infoRow(Icons.people, "최대인원"),
-                        ],
+                    const SizedBox(height: 10),
+                    _infoBox([
+                      _infoRow(Icons.add, "호스트"),
+                      _infoRow(Icons.calendar_today, "날짜"),
+                      _infoRow(Icons.location_on, "위치"),
+                      _infoRow(Icons.people, "최대인원"),
+                    ]),
+                    const SizedBox(height: 20),
+                    _sectionTitle("RSVP 옵션", actionText: "수정하기"),
+                    _infoBox([
+                      _rsvpOption("Meeting", "6,000원", Icons.favorite),
+                      const SizedBox(height: 10),
+                      _rsvpOption("Normal", "5,000원", Icons.favorite_border),
+                    ]),
+                    const SizedBox(height: 20),
+                    _sectionTitle("게스트 정보"),
+                    _infoBox([
+                      _guestInputRow(Icons.person, "이름 / 학교"),
+                      _guestInputRow(Icons.calendar_today, "생년월일"),
+                      _guestInputRow(Icons.phone, "연락처 (대표자)"),
+                      _genderRow(),
+                    ]),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white12,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text("이벤트 생성하기",
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),
@@ -220,6 +276,34 @@ class _AddEventScreenState extends State<AddEventScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _sectionTitle(String title, {String? actionText}) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title, style: const TextStyle(color: Colors.white, fontSize: 18)),
+        if (actionText != null)
+          TextButton(
+            onPressed: () {},
+            child:
+                Text(actionText, style: const TextStyle(color: Colors.white)),
+          ),
+      ],
+    );
+  }
+
+  Widget _infoBox(List<Widget> children) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0x66FFFFFF)),
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.black.withOpacity(0.4),
+      ),
+      child: Column(children: children),
     );
   }
 
@@ -232,6 +316,92 @@ class _AddEventScreenState extends State<AddEventScreen> {
           const SizedBox(width: 16),
           Text(label, style: const TextStyle(color: Colors.white70)),
         ],
+      ),
+    );
+  }
+
+  Widget _rsvpOption(String title, String price, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color(0x66FFFFFF)),
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.black.withOpacity(0.3),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white70),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(title, style: const TextStyle(color: Colors.white)),
+          ),
+          Text(price, style: const TextStyle(color: Colors.white70)),
+        ],
+      ),
+    );
+  }
+
+  Widget _guestInputRow(IconData icon, String hint) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: TextField(
+        style: const TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          prefixIcon: Icon(icon, color: Colors.white54),
+          hintText: hint,
+          hintStyle: const TextStyle(color: Colors.white38),
+          filled: true,
+          fillColor: Colors.black.withOpacity(0.3),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0x66FFFFFF)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0x66FFFFFF)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0x66FFFFFF)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _genderRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          const Text("성별", style: TextStyle(color: Colors.white)),
+          const SizedBox(width: 20),
+          Expanded(
+            child: Row(
+              children: [
+                _genderOption("남성"),
+                const SizedBox(width: 10),
+                _genderOption("여성"),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _genderOption(String label) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          border: Border.all(color: const Color(0x66FFFFFF)),
+          borderRadius: BorderRadius.circular(10),
+          color: Colors.black.withOpacity(0.3),
+        ),
+        child: Center(
+          child: Text(label, style: const TextStyle(color: Colors.white)),
+        ),
       ),
     );
   }
